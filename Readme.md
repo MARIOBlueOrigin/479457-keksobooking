@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Наталья  Осипова](https://up.htmlacademy.ru/javascript/11/user/479457).
-* Наставник: [Андрей Фирсов] (https://htmlacademy.ru/profile/id83908).
+* Наставник: [Андрей Фирсов](https://htmlacademy.ru/profile/id83908).
 
 ---
 
