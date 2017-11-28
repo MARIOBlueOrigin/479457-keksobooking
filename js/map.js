@@ -1,10 +1,10 @@
 'use strict';
 
 var ADVERT_COUNT = 8;
-var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var HOTEL_TYPES = ['flat', 'house', 'bungalo'];
 var CHECK_TIMES = ['12:00', '13:00', '14:00'];
-var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var features = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var titles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var coordinatesX = [];
 var coordinatesY = [];
 
@@ -20,7 +20,7 @@ var getRandomIndex = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-var getUniqueIndex = function (array) {
+var getUniqueItem = function (array) {
   var index = getRandomIndex(0, array.length - 1);
   return array.splice(index, 1);
 };
@@ -32,7 +32,7 @@ var getPictureNumber = function (value) {
   }
   return numbers;
 };
-var numbers = getPictureNumber();
+var numbers = getPictureNumber(ADVERT_COUNT);
 
 var findCoordinates = function () {
   for (var i = 0; i < ADVERT_COUNT; i++) {
@@ -44,27 +44,29 @@ var findCoordinates = function () {
 var generateAdverts = function () {
   var adverts = [];
   for (var i = 0; i < ADVERT_COUNT; i++) {
+    var x = coordinatesX[i];
+    var y = coordinatesY[i];
     adverts.push({
       'author': {
-        'avatar': 'img/avatars/user' + getUniqueIndex(numbers) + '.png'
+        'avatar': 'img/avatars/user' + getUniqueItem(numbers) + '.png'
       },
       'offer': {
-        'title': '' + getUniqueIndex(TITLES),
-        'address': '' + findCoordinates(coordinatesX) + '' + findCoordinates(coordinatesY),
+        'title': '' + getUniqueItem(titles),
         'price': getRandomIndex(1000, 1000000),
+        'address': x + ', ' + y,
         'type': '' + getRandomIndex(HOTEL_TYPES),
         'rooms': getRandomIndex(1, 5),
         'guests': getRandomIndex(1, 10),
         'checkin': '' + getRandomIndex(CHECK_TIMES),
         'checkout': '' + getRandomIndex(CHECK_TIMES),
-        'features': '' + getRandomIndex(FEATURES),
+        'features': '' + getRandomIndex(features),
         'description': '',
         'photos': []
 
       },
       'location': {
-        'x': coordinatesX[i],
-        'y': coordinatesY[i]
+        'x': findCoordinates(coordinatesX[i]),
+        'y': findCoordinates(coordinatesY[i])
       }
     });
   }
@@ -82,12 +84,31 @@ var createElement = function () {
 
 var createAdverts = function () {
   var advertFeature = mapCardTemplate.cloneNode(true);
+
+  var deduceTypes = function (offerTypes) {
+    offerTypes = {
+      flat: 'Квартира',
+      house: 'Дом',
+      bungalo: 'Бунгало'
+    };
+    return offerTypes;
+  };
+
+  advertFeature.querySelector('h3').textContent = generateAdverts.offer.title;
+  advertFeature.querySelector('small').textContent = generateAdverts.offer.address;
+  advertFeature.querySelector('.popup__price').textContent = generateAdverts.offer.price + ' ' + String.fromCharCode(8381) + ' / ночь';
+  advertFeature.querySelector('h4').textContent = deduceTypes(generateAdverts.offer.type);
+  advertFeature.querySelector('p')[4].textContent = 'Заезд после ' + generateAdverts.offer.checkin + ', выезд до ' + generateAdverts.offer.checkout;
+  advertFeature.querySelector('p')[5].textContent = generateAdverts.offer.description;
+  advertFeature.querySelector('.popup__avatar').setAttribute('src', generateAdverts.author.avatar);
+
+  return advertFeature;
 };
 
 var pasteAdverts = generateAdverts();
 var fragment = document.createDocumentFragment();
 for (var i = 0; i < ADVERT_COUNT.length; i++) {
-  fragment.appendChild(pasteAdverts());
+  fragment.appendChild(createAdverts(pasteAdverts[i]));
 }
 map.appendChild(fragment);
 mapPins.appendChild(fragment);
