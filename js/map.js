@@ -63,9 +63,9 @@ var getPictureNumber = function (value) {
 var numbers = getPictureNumber(ADVERT_COUNT);
 
 //  функция собирает объявления
-var generateAdverts = function () {
+var generateAdverts = function (count) {
   var adverts = [];
-  for (var i = 0; i < ADVERT_COUNT; i++) {
+  for (var i = 0; i < count; i++) {
     var x = (getRandomIndex(PIN_X_MIN, PIN_X_MAX) + PIN_X_SIZE);
     var y = (getRandomIndex(PIN_Y_MIN, PIN_Y_MAX) + PIN_Y_SIZE);
     adverts.push({
@@ -95,16 +95,16 @@ var generateAdverts = function () {
 };
 
 // функция собирает DOM-элементы, соответствующие меткам на карте
-var createMapPin = function () {
+var createMapPin = function (pin) {
   var mapPin = similarMapCardTemplate.querySelector('.map__pin').cloneNode(true);
-  mapPin.style.top = generateAdverts.location.y + 'px';
-  mapPin.style.left = generateAdverts.location.x + 'px';
-  mapPin.querySelector('img').src = generateAdverts.author.avatar;
+  mapPin.style.top = pin.location.y + 'px';
+  mapPin.style.left = pin.location.x + 'px';
+  mapPin.querySelector('img').src = pin.author.avatar;
   return mapPin;
 };
 
 // функция  создает фрагмент с сгенерированными DOM-элементами в блоке .map__pins
-var arrayMapPin = generateAdverts();
+var arrayMapPin = generateAdverts(ADVERT_COUNT);
 var generateAdMark = function () {
   var mapPins = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
@@ -130,7 +130,7 @@ var createAdvert = function () {
   advertFeature.querySelector('h3').textContent = generateAdverts.offer.title;
   advertFeature.querySelector('small').textContent = generateAdverts.offer.address;
   advertFeature.querySelector('.popup__price').textContent = generateAdverts.offer.price + ' ' + String.fromCharCode(8381) + ' / ночь';
-  advertFeature.querySelector('h4').textContent = advertFeature.querySelector('h4').textContent = OFFER_TYPES[generateAdverts.type];
+  advertFeature.querySelector('h4').textContent = OFFER_TYPES[generateAdverts.type];
   advertFeature.querySelector('p')[3].textContent = generateAdverts.offer.rooms + ' комнаты для ' + generateAdverts.offer.guests;
   advertFeature.querySelector('p')[4].textContent = 'Заезд после ' + generateAdverts.offer.checkin + ', выезд до ' + generateAdverts.offer.checkout;
   advertFeature.querySelector('p')[5].textContent = generateAdverts.offer.description;
@@ -147,10 +147,10 @@ var map = document.querySelector('.map');
 map.classList.remove('map--faded');
 
 // функция создает фрагмент с сгенерированными DOM-элементами в блоке .map
-var generateMap = function () {
+var generateMap = function (count) {
   var fragment = document.createDocumentFragment();
-  for (var i = 0; i < ADVERT_COUNT.length; i++) {
-    fragment.appendChild(createAdvert(arrayMapPin[i]));
+  for (var i = 0; i < count.length; i++) {
+    fragment.appendChild(createAdvert(count[i]));
   }
   map.appendChild(fragment);
 };
