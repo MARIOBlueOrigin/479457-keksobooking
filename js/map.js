@@ -128,8 +128,8 @@ var createAdvertElement = function (adverts) {
   advertElement.querySelector('small').textContent = adverts.offer.address;
   advertElement.querySelector('.popup__price').textContent = adverts.offer.price + ' ' + String.fromCharCode(8381) + ' / ночь';
   advertElement.querySelector('h4').textContent = OFFER_TYPES[adverts.type];
-  advertElement.querySelectorAll('p')[2].textContent = adverts.offer.rooms + ' комнаты для ' + adverts.offer.guests;
-  advertElement.querySelectorAll('p')[3].textContent = 'Заезд после ' + adverts.offer.checkin + ', выезд до ' + adverts.offer.checkout;
+  advertElement.querySelectorAll('h4 + p').textContent = adverts.offer.rooms + ' комнаты для ' + adverts.offer.guests;
+  advertElement.querySelectorAll('h4 + p + p').textContent = 'Заезд после ' + adverts.offer.checkin + ', выезд до ' + adverts.offer.checkout;
   advertElement.querySelectorAll('p')[4].textContent = adverts.offer.description;
 
 
