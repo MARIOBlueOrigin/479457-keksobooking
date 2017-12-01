@@ -1,8 +1,5 @@
 'use strict';
 
-// кол-во пинов
-var PIN_COUNT = 8;
-
 // координаты пинов
 var PIN_X_MIN = 300;
 var PIN_X_MAX = 900;
@@ -104,7 +101,7 @@ var createMapPin = function (pin) {
 };
 
 // функция  создает фрагмент с сгенерированными DOM-элементами в блоке .map__pins
-var renderPins = function () {
+var renderPins = function (adverts) {
   var mapPins = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < adverts.length; i++) {
@@ -131,10 +128,16 @@ var createAdvertElement = function (adverts) {
   advertElement.querySelector('small').textContent = adverts.offer.address;
   advertElement.querySelector('.popup__price').textContent = adverts.offer.price + ' ' + String.fromCharCode(8381) + ' / ночь';
   advertElement.querySelector('h4').textContent = OFFER_TYPES[adverts.type];
-  advertElement.querySelector('p')[3].textContent = adverts.offer.rooms + ' комнаты для ' + adverts.offer.guests;
-  advertElement.querySelector('p')[4].textContent = 'Заезд после ' + adverts.offer.checkin + ', выезд до ' + adverts.offer.checkout;
-  advertElement.querySelector('p')[5].textContent = adverts.offer.description;
-  advertElement.appendChild(getFeatures(adverts.offer.features));
+  advertElement.querySelectorAll('p')[2].textContent = adverts.offer.rooms + ' комнаты для ' + adverts.offer.guests;
+  advertElement.querySelectorAll('p')[3].textContent = 'Заезд после ' + adverts.offer.checkin + ', выезд до ' + adverts.offer.checkout;
+  advertElement.querySelectorAll('p')[4].textContent = adverts.offer.description;
+
+
+  var list = advertElement.querySelectorAll('.popup__features')[adverts.offer.features.length];
+  for (var j = 0; j < list; j++) {
+    advertElement.querySelector('.popup__features').removeChild(list);
+  }
+  advertElement.querySelectorAll('popup__features').textContent = getFeatures(adverts.offer.features);
   advertElement.querySelector('.popup__avatar').setAttribute('src', adverts.author.avatar);
   return advertElement;
 };
@@ -147,16 +150,15 @@ var map = document.querySelector('.map');
 map.classList.remove('map--faded');
 
 // функция создает фрагмент с сгенерированными DOM-элементами в блоке .map
-var renderAdvert = function (adverts) {
+var renderAdvert = function (advert) {
   var fragment = document.createDocumentFragment();
-  for (var i = 0; i < adverts.length; i++) {
-    fragment.appendChild(createAdvertElement(adverts[i]));
-  }
+  fragment.appendChild(createAdvertElement(advert));
   map.appendChild(fragment);
 };
+
 // переменная сохраняет результат функции
 var adverts = generateAdverts(ADVERT_COUNT);
 
 // вызов функций
-renderPins(PIN_COUNT);
+renderPins(adverts);
 renderAdvert(adverts[0]);
