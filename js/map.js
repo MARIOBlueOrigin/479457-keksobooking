@@ -104,39 +104,39 @@ var createMapPin = function (pin) {
 };
 
 // функция  создает фрагмент с сгенерированными DOM-элементами в блоке .map__pins
-var arrayMapPin = generateAdverts(ADVERT_COUNT);
-var generateAdMark = function () {
+var renderPins = function () {
   var mapPins = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
-  for (var i = 0; i < arrayMapPin.length; i++) {
-    fragment.appendChild(createMapPin(arrayMapPin[i]));
+  for (var i = 0; i < adverts.length; i++) {
+    fragment.appendChild(createMapPin(adverts[i]));
   }
   mapPins.appendChild(fragment);
 };
 
+// функция, выводящая li
+var getFeatures = function (features) {
+  var featureItem = document.createDocumentFragment();
+  for (var j = 0; j < features.length; j++) {
+    var newLi = document.createElement('li');
+    newLi.className = 'feature feature--' + features[j];
+    featureItem.appendChild(newLi);
+  }
+  return featureItem;
+};
+
 //  функция создает DOM-элемент шаблона (template) 'article.map__card'
-var createAdvert = function () {
-  var advertFeature = mapCardTemplate.cloneNode(true);
-  // функция, выводящая li
-  var getFeatures = function (features) {
-    var featureItem = document.createDocumentFragment();
-    for (var j = 0; j < features.length; j++) {
-      var newLi = document.createElement('li');
-      newLi.className = 'feature feature--' + features[j];
-      featureItem.appendChild(newLi);
-    }
-    advertFeature.appendChild(newLi);
-  };
-  advertFeature.querySelector('h3').textContent = generateAdverts.offer.title;
-  advertFeature.querySelector('small').textContent = generateAdverts.offer.address;
-  advertFeature.querySelector('.popup__price').textContent = generateAdverts.offer.price + ' ' + String.fromCharCode(8381) + ' / ночь';
-  advertFeature.querySelector('h4').textContent = OFFER_TYPES[generateAdverts.type];
-  advertFeature.querySelector('p')[3].textContent = generateAdverts.offer.rooms + ' комнаты для ' + generateAdverts.offer.guests;
-  advertFeature.querySelector('p')[4].textContent = 'Заезд после ' + generateAdverts.offer.checkin + ', выезд до ' + generateAdverts.offer.checkout;
-  advertFeature.querySelector('p')[5].textContent = generateAdverts.offer.description;
-  getFeatures(generateAdverts.offer.features);
-  advertFeature.querySelector('.popup__avatar').setAttribute('src', generateAdverts.author.avatar);
-  return advertFeature;
+var createAdvertElement = function (adverts) {
+  var advertElement = mapCardTemplate.cloneNode(true);
+  advertElement.querySelector('h3').textContent = adverts.offer.title;
+  advertElement.querySelector('small').textContent = adverts.offer.address;
+  advertElement.querySelector('.popup__price').textContent = adverts.offer.price + ' ' + String.fromCharCode(8381) + ' / ночь';
+  advertElement.querySelector('h4').textContent = OFFER_TYPES[adverts.type];
+  advertElement.querySelector('p')[3].textContent = adverts.offer.rooms + ' комнаты для ' + adverts.offer.guests;
+  advertElement.querySelector('p')[4].textContent = 'Заезд после ' + adverts.offer.checkin + ', выезд до ' + adverts.offer.checkout;
+  advertElement.querySelector('p')[5].textContent = adverts.offer.description;
+  advertElement.appendChild(getFeatures(adverts.offer.features));
+  advertElement.querySelector('.popup__avatar').setAttribute('src', adverts.author.avatar);
+  return advertElement;
 };
 
 var similarMapCardTemplate = document.querySelector('template').content;
@@ -147,14 +147,16 @@ var map = document.querySelector('.map');
 map.classList.remove('map--faded');
 
 // функция создает фрагмент с сгенерированными DOM-элементами в блоке .map
-var generateMap = function (count) {
+var renderAdvert = function (adverts) {
   var fragment = document.createDocumentFragment();
-  for (var i = 0; i < count.length; i++) {
-    fragment.appendChild(createAdvert(count[i]));
+  for (var i = 0; i < adverts.length; i++) {
+    fragment.appendChild(createAdvertElement(adverts[i]));
   }
   map.appendChild(fragment);
 };
+// переменная сохраняет результат функции
+var adverts = generateAdverts(ADVERT_COUNT);
 
 // вызов функций
-generateAdMark(PIN_COUNT);
-generateMap(ADVERT_COUNT);
+renderPins(PIN_COUNT);
+renderAdvert(adverts[0]);
