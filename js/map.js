@@ -144,7 +144,6 @@ var createAdvertElement = function (adverts) {
   while (advertElement.querySelector('.popup__features')) {
     advertElement.removeChild(advertElement.querySelector('.popup__features'));
   }
-  advertElement.querySelector('.popup__features').textContent = '';
   advertElement.querySelector('popup__features').appendChild(getFeatures(adverts.offer.features));
   advertElement.querySelector('.popup__avatar').setAttribute('src', adverts.author.avatar);
   return advertElement;
