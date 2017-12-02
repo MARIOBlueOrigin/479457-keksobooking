@@ -59,6 +59,16 @@ var getPictureNumber = function (value) {
 // сохраняем в переменную определение номеров изображений
 var numbers = getPictureNumber(ADVERT_COUNT);
 
+// получение массива с features
+var getArrayFeatures = function (features) {
+  var arrayFeatures = [];
+  var featuresCount = getUniqueItem(1, features.length);
+  for (var j = 0; j < featuresCount; j++) {
+    arrayFeatures.push(features[j]);
+  }
+  return arrayFeatures;
+};
+
 //  функция собирает объявления
 var generateAdverts = function (count) {
   var adverts = [];
@@ -70,15 +80,15 @@ var generateAdverts = function (count) {
         'avatar': 'img/avatars/user' + getUniqueItem(numbers) + '.png'
       },
       'offer': {
-        'title': '' + getUniqueItem(titles),
+        'title': getUniqueItem(titles),
         'price': getRandomIndex(PRICE_MIN, PRICE_MAX),
         'address': x + ', ' + y,
-        'type': '' + getRandomIndex(HOTEL_TYPES),
+        'type': getRandomIndex(HOTEL_TYPES),
         'rooms': getRandomIndex(ROOMS_MIN, ROOMS_MAX),
         'guests': getRandomIndex(GUESTS_MIN, GUESTS_MAX),
-        'checkin': '' + getRandomIndex(CHECK_TIMES),
-        'checkout': '' + getRandomIndex(CHECK_TIMES),
-        'features': '' + getRandomIndex(FEATURES),
+        'checkin': getRandomIndex(CHECK_TIMES),
+        'checkout': getRandomIndex(CHECK_TIMES),
+        'features': getArrayFeatures(FEATURES),
         'description': '',
         'photos': []
       },
@@ -131,13 +141,11 @@ var createAdvertElement = function (adverts) {
   advertElement.querySelectorAll('h4 + p').textContent = adverts.offer.rooms + ' комнаты для ' + adverts.offer.guests;
   advertElement.querySelectorAll('h4 + p + p').textContent = 'Заезд после ' + adverts.offer.checkin + ', выезд до ' + adverts.offer.checkout;
   advertElement.querySelectorAll('p')[4].textContent = adverts.offer.description;
-
-
-  var list = advertElement.querySelectorAll('.popup__features')[adverts.offer.features.length];
-  for (var j = 0; j < list; j++) {
-    advertElement.querySelector('.popup__features').removeChild(list);
+  while (advertElement.querySelector('.popup__features')) {
+    advertElement.removeChild(advertElement.querySelector('.popup__features'));
   }
-  advertElement.querySelectorAll('popup__features').textContent = getFeatures(adverts.offer.features);
+  advertElement.querySelector('.popup__features').textContent = '';
+  advertElement.querySelector('popup__features').appendChild(getFeatures(adverts.offer.features));
   advertElement.querySelector('.popup__avatar').setAttribute('src', adverts.author.avatar);
   return advertElement;
 };
