@@ -62,7 +62,7 @@ var numbers = getPictureNumber(ADVERT_COUNT);
 // получение массива с features
 var getArrayFeatures = function (features) {
   var arrayFeatures = [];
-  var featuresCount = getUniqueItem(1, features.length);
+  var featuresCount = getRandomIndex(1, features.length);
   for (var j = 0; j < featuresCount; j++) {
     arrayFeatures.push(features[j]);
   }
@@ -83,11 +83,11 @@ var generateAdverts = function (count) {
         'title': getUniqueItem(titles),
         'price': getRandomIndex(PRICE_MIN, PRICE_MAX),
         'address': x + ', ' + y,
-        'type': getRandomIndex(HOTEL_TYPES),
+        'type': HOTEL_TYPES[getRandomIndex(0, HOTEL_TYPES.length - 1)],
         'rooms': getRandomIndex(ROOMS_MIN, ROOMS_MAX),
         'guests': getRandomIndex(GUESTS_MIN, GUESTS_MAX),
-        'checkin': getRandomIndex(CHECK_TIMES),
-        'checkout': getRandomIndex(CHECK_TIMES),
+        'checkin': CHECK_TIMES[getRandomIndex(0, CHECK_TIMES.length - 1)],
+        'checkout': CHECK_TIMES[getRandomIndex(0, CHECK_TIMES.length - 1)],
         'features': getArrayFeatures(FEATURES),
         'description': '',
         'photos': []
@@ -141,8 +141,8 @@ var createAdvertElement = function (adverts) {
   advertElement.querySelectorAll('h4 + p').textContent = adverts.offer.rooms + ' комнаты для ' + adverts.offer.guests;
   advertElement.querySelectorAll('h4 + p + p').textContent = 'Заезд после ' + adverts.offer.checkin + ', выезд до ' + adverts.offer.checkout;
   advertElement.querySelectorAll('p')[4].textContent = adverts.offer.description;
-  while (advertElement.querySelector('.popup__features')) {
-    advertElement.removeChild(advertElement.querySelector('.popup__features'));
+  while (advertElement.querySelector('.popup__features').firstChild) {
+    advertElement.querySelector('.popup__features').removeChild(advertElement.querySelector('.popup__features').firstChild);
   }
   advertElement.querySelector('popup__features').appendChild(getFeatures(adverts.offer.features));
   advertElement.querySelector('.popup__avatar').setAttribute('src', adverts.author.avatar);
