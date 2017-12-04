@@ -112,7 +112,6 @@ var createMapPin = function (pin) {
 
 // функция  создает фрагмент с сгенерированными DOM-элементами в блоке .map__pins
 var renderPins = function (adverts) {
-  var mapPins = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < adverts.length; i++) {
     fragment.appendChild(createMapPin(adverts[i]));
@@ -133,7 +132,6 @@ var getFeatures = function (features) {
 
 //  функция создает DOM-элемент шаблона (template) 'article.map__card'
 var createAdvertElement = function (adverts) {
-  var advertElement = mapCardTemplate.cloneNode(true);
   var advertPopup = advertElement.querySelector('.popup__features');
   advertElement.querySelector('h3').textContent = adverts.offer.title;
   advertElement.querySelector('small').textContent = adverts.offer.address;
@@ -152,10 +150,15 @@ var createAdvertElement = function (adverts) {
 
 var similarMapCardTemplate = document.querySelector('template').content;
 var mapCardTemplate = similarMapCardTemplate.querySelector('article.map__card');
-
-// у блока .map убераем класс .map--faded
+var advertElement = mapCardTemplate.cloneNode(true);
 var map = document.querySelector('.map');
-map.classList.remove('map--faded');
+var mapPins = document.querySelector('.map__pins');
+var mapPinMain = map.querySelector('.map__pin--main');
+var form = document.querySelector('.notice__form');
+var previousPopup = null;
+var previousPin = null;
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 
 // функция создает фрагмент с сгенерированными DOM-элементами в блоке .map
 var renderAdvert = function (advert) {
@@ -167,6 +170,62 @@ var renderAdvert = function (advert) {
 // переменная сохраняет результат функции
 var adverts = generateAdverts(ADVERT_COUNT);
 
-// вызов функций
-renderPins(adverts);
-renderAdvert(adverts[0]);
+// сценарии взаимодействия пользователя с сайтом
+
+// скрытие объявления
+advertElement.classList.add('hidden');
+
+// событие mouseup
+var mapActive = function () {
+  map.classList.remove('map--faded');
+  renderPins(adverts);
+  form.classList.remove('notice__form--disabled');
+};
+mapPinMain.addEventListener('mouseup', function () {
+  mapActive();
+});
+
+// взаимодействие с Esc
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+// функция, открывающая объявление
+var openPopup = function () {
+  advertElement.classList.remove('hidden');
+  document.addEventListener('keydown', onPopupEscPress);
+};
+
+// функция, закрывающая объявление
+var closePopup = function () {
+  previousPopup.classList.add('hidden');
+  previousPin.classList.remove('map__pin--active');
+  document.removeEventListener('keydown', onPopupEscPress);
+};
+
+// показ/ скрытие объявления
+var onPinClick = function (event) {
+  var activePin = event.currentTarget;
+  activePin.classList.add('map__pin--active');
+  if (previousPin) {
+    previousPin.classList.remove('map__pin--active');
+  }
+  previousPin = activePin;
+  var activePopup = renderAdvert(adverts[0]);
+  openPopup(activePopup);
+  var popupClose = activePopup.querySelector('.popup__close');
+  // закрытие объявление по нажатию мышки
+  popupClose.addEventListener('click', function () {
+    closePopup();
+  });
+  // по enter
+  popupClose.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      closePopup();
+    }
+  });
+  // по esc
+  document.addEventListener('keydown', onPopupEscPress);
+};
