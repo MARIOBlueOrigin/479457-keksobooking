@@ -134,6 +134,7 @@ var getFeatures = function (features) {
 //  функция создает DOM-элемент шаблона (template) 'article.map__card'
 var createAdvertElement = function (adverts) {
   var advertElement = mapCardTemplate.cloneNode(true);
+  var advertPopup = advertElement.querySelector('.popup__features');
   advertElement.querySelector('h3').textContent = adverts.offer.title;
   advertElement.querySelector('small').textContent = adverts.offer.address;
   advertElement.querySelector('.popup__price').textContent = adverts.offer.price + ' ' + String.fromCharCode(8381) + ' / ночь';
@@ -141,10 +142,10 @@ var createAdvertElement = function (adverts) {
   advertElement.querySelectorAll('h4 + p').textContent = adverts.offer.rooms + ' комнаты для ' + adverts.offer.guests;
   advertElement.querySelectorAll('h4 + p + p').textContent = 'Заезд после ' + adverts.offer.checkin + ', выезд до ' + adverts.offer.checkout;
   advertElement.querySelectorAll('p')[4].textContent = adverts.offer.description;
-  while (advertElement.querySelector('.popup__features').firstChild) {
-    advertElement.querySelector('.popup__features').removeChild(advertElement.querySelector('.popup__features').firstChild);
+  while (advertPopup.firstChild) {
+    advertPopup.removeChild(advertPopup.firstChild);
   }
-  advertElement.querySelector('popup__features').appendChild(getFeatures(adverts.offer.features));
+  advertPopup.appendChild(getFeatures(adverts.offer.features));
   advertElement.querySelector('.popup__avatar').setAttribute('src', adverts.author.avatar);
   return advertElement;
 };
