@@ -147,11 +147,12 @@ var generateAdverts = function (count) {
 };
 
 // функция собирает DOM-элементы, соответствующие меткам на карте
-var createMapPin = function (pin) {
+var createMapPin = function (pin, i) {
   var mapPin = similarMapCardTemplate.querySelector('.map__pin').cloneNode(true);
   mapPin.style.top = pin.location.y + 'px';
   mapPin.style.left = pin.location.x + 'px';
   mapPin.querySelector('img').src = pin.author.avatar;
+  mapPin.setAttribute('data-index', i);
   return mapPin;
 };
 
@@ -159,7 +160,7 @@ var createMapPin = function (pin) {
 var renderPins = function (adverts) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < adverts.length; i++) {
-    fragment.appendChild(createMapPin(adverts[i]));
+    fragment.appendChild(createMapPin(adverts[i], i));
   }
   mapPins.appendChild(fragment);
 };
@@ -245,19 +246,19 @@ var onEnterPress = function (evt) {
 // функция, открывающая объявление
 var openPopup = function () {
   advertElement.classList.remove('hidden');
-  renderAdvert(adverts[0]);
   document.addEventListener('keydown', onPopupEscPress);
 };
 
 // функция, закрывающая объявление
 var closePopup = function () {
+  advertElement.classList.add('hidden');
   previousPin.classList.remove('map__pin--active');
   document.removeEventListener('keydown', onPopupEscPress);
 };
 
 // показ/ скрытие объявления
 var onPinClick = function (evt) {
-  var activePin = evt.currentTarget;
+  var activePin = evt.target;
 
   while (activePin !== mapPins) {
     if (activePin.tagName === 'BUTTON') {
@@ -267,6 +268,7 @@ var onPinClick = function (evt) {
       }
       previousPin = activePin;
       if (!activePin.classList.contains('map__pin--main')) {
+        renderAdvert(adverts[activePin.dataset.index]);
         openPopup();
       }
       return;
