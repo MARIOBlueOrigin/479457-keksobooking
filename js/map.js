@@ -54,7 +54,6 @@ var GUESTS_MAX = 10;
 
 // код клавиш
 var ESC_KEYCODE = 27;
-var ENTER_KEYCODE = 13;
 
 // элементы шаблона
 var similarMapCardTemplate = document.querySelector('template').content;
@@ -75,9 +74,6 @@ var popupClose = advertElement.querySelector('.popup__close');
 
 //  форма
 var form = document.querySelector('.notice__form');
-
-// кол-во fieldset
-var FIELD_COUNT = 12;
 
 var previousPin = null;
 
@@ -210,18 +206,19 @@ var adverts = generateAdverts(ADVERT_COUNT);
 // ______________________________________________
 
 // функция, назначающая полям формы атрибут disabled
-var disableForm = function () {
-  for (var i = 0; i < FIELD_COUNT; i++) {
-    form.querySelectorAll('fieldset')[i].setAttribute('disabled', 'disabled');
+var toggleForm = function () {
+  for (var i = 0; i < form.querySelectorAll('fieldset').length; i++) {
+    form.querySelectorAll('fieldset')[i].setAttribute('disabled', true);
   }
 };
+toggleForm(true);
 
 // функция, активирующая карту
 var activateMap = function () {
   map.classList.remove('map--faded');
   renderPins(adverts);
   form.classList.remove('notice__form--disabled');
-  disableForm(FIELD_COUNT);
+  toggleForm(false);
 };
 
 // взаимодействие с Esc
@@ -236,16 +233,10 @@ var onCloseClick = function () {
   closePopup();
 };
 
-// закрытие по enter
-var onEnterPress = function (evt) {
-  if (evt.keycode === ENTER_KEYCODE) {
-    closePopup();
-  }
-};
-
 // функция, открывающая объявление
 var openPopup = function () {
   advertElement.classList.remove('hidden');
+  popupClose.addEventListener('click', onCloseClick);
   document.addEventListener('keydown', onPopupEscPress);
 };
 
@@ -284,10 +275,5 @@ advertElement.classList.add('hidden');
 mapPinMain.addEventListener('mouseup', activateMap);
 // клик на маркер
 mapPins.addEventListener('click', onPinClick);
-
-// закрытие по нажатию мышки
-popupClose.addEventListener('click', onCloseClick);
-// по enter
-popupClose.addEventListener('keydown', onEnterPress);
 
 
