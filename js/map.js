@@ -12,9 +12,24 @@ var PIN_Y_SIZE = 40;
 var ADVERT_COUNT = 8;
 
 // данные объявлений
-var HOTEL_TYPES = ['flat', 'house', 'bungalo'];
-var CHECK_TIMES = ['12:00', '13:00', '14:00'];
-var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var HOTEL_TYPES = [
+  'flat',
+  'house',
+  'bungalo'
+];
+var CHECK_TIMES = [
+  '12:00',
+  '13:00',
+  '14:00'
+];
+var FEATURES = [
+  'wifi',
+  'dishwasher',
+  'parking',
+  'washer',
+  'elevator',
+  'conditioner'
+];
 var titles = [
   'Большая уютная квартира',
   'Маленькая неуютная квартира',
@@ -36,6 +51,32 @@ var ROOMS_MIN = 1;
 var ROOMS_MAX = 5;
 var GUESTS_MIN = 1;
 var GUESTS_MAX = 10;
+
+// код клавиш
+var ESC_KEYCODE = 27;
+
+// элементы шаблона
+var similarMapCardTemplate = document.querySelector('template').content;
+var mapCardTemplate = similarMapCardTemplate.querySelector('article.map__card');
+var advertElement = mapCardTemplate.cloneNode(true);
+
+// главная часть страницы - карта
+var map = document.querySelector('.map');
+
+// пины
+var mapPins = document.querySelector('.map__pins');
+
+// центральный пин
+var mapPinMain = map.querySelector('.map__pin--main');
+
+// закрытие объявления
+var popupClose = advertElement.querySelector('.popup__close');
+
+//  форма
+var form = document.querySelector('.notice__form');
+
+var previousPin = null;
+
 
 // функция генерирует случайное число
 var getRandomIndex = function (min, max) {
@@ -102,20 +143,20 @@ var generateAdverts = function (count) {
 };
 
 // функция собирает DOM-элементы, соответствующие меткам на карте
-var createMapPin = function (pin) {
+var createMapPin = function (pin, i) {
   var mapPin = similarMapCardTemplate.querySelector('.map__pin').cloneNode(true);
   mapPin.style.top = pin.location.y + 'px';
   mapPin.style.left = pin.location.x + 'px';
   mapPin.querySelector('img').src = pin.author.avatar;
+  mapPin.setAttribute('data-index', i);
   return mapPin;
 };
 
 // функция  создает фрагмент с сгенерированными DOM-элементами в блоке .map__pins
 var renderPins = function (adverts) {
-  var mapPins = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < adverts.length; i++) {
-    fragment.appendChild(createMapPin(adverts[i]));
+    fragment.appendChild(createMapPin(adverts[i], i));
   }
   mapPins.appendChild(fragment);
 };
@@ -133,7 +174,6 @@ var getFeatures = function (features) {
 
 //  функция создает DOM-элемент шаблона (template) 'article.map__card'
 var createAdvertElement = function (adverts) {
-  var advertElement = mapCardTemplate.cloneNode(true);
   var advertPopup = advertElement.querySelector('.popup__features');
   advertElement.querySelector('h3').textContent = adverts.offer.title;
   advertElement.querySelector('small').textContent = adverts.offer.address;
@@ -150,13 +190,6 @@ var createAdvertElement = function (adverts) {
   return advertElement;
 };
 
-var similarMapCardTemplate = document.querySelector('template').content;
-var mapCardTemplate = similarMapCardTemplate.querySelector('article.map__card');
-
-// у блока .map убераем класс .map--faded
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
-
 // функция создает фрагмент с сгенерированными DOM-элементами в блоке .map
 var renderAdvert = function (advert) {
   var fragment = document.createDocumentFragment();
@@ -167,6 +200,84 @@ var renderAdvert = function (advert) {
 // переменная сохраняет результат функции
 var adverts = generateAdverts(ADVERT_COUNT);
 
-// вызов функций
-renderPins(adverts);
-renderAdvert(adverts[0]);
+// ______________________________________________
+//
+// сценарии взаимодействия пользователя с сайтом
+// ______________________________________________
+
+// функция, назначающая полям формы атрибут disabled
+var toggleForm = function (disabled) {
+  for (var i = 0; i < form.querySelectorAll('fieldset').length; i++) {
+    if (disabled) {
+      form.querySelectorAll('fieldset')[i].setAttribute('disabled', true);
+    } else {
+      form.querySelectorAll('fieldset')[i].removeAttribute('disabled');
+    }
+  }
+};
+toggleForm(true);
+
+// функция, активирующая карту
+var activateMap = function () {
+  map.classList.remove('map--faded');
+  renderPins(adverts);
+  toggleForm();
+  form.classList.remove('notice__form--disabled');
+};
+
+// взаимодействие с Esc
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+// закрытие объявление по нажатию мышки
+var onCloseClick = function () {
+  closePopup();
+};
+
+// функция, открывающая объявление
+var openPopup = function () {
+  advertElement.classList.remove('hidden');
+  popupClose.addEventListener('click', onCloseClick);
+  document.addEventListener('keydown', onPopupEscPress);
+};
+
+// функция, закрывающая объявление
+var closePopup = function () {
+  advertElement.classList.add('hidden');
+  previousPin.classList.remove('map__pin--active');
+  document.removeEventListener('keydown', onPopupEscPress);
+};
+
+// показ/ скрытие объявления
+var onPinClick = function (evt) {
+  var activePin = evt.target;
+
+  while (activePin !== mapPins) {
+    if (activePin.tagName === 'BUTTON') {
+      activePin.classList.add('map__pin--active');
+      if (previousPin) {
+        previousPin.classList.remove('map__pin--active');
+      }
+      previousPin = activePin;
+      if (!activePin.classList.contains('map__pin--main')) {
+        renderAdvert(adverts[activePin.dataset.index]);
+        openPopup();
+      }
+      return;
+    }
+    activePin = activePin.parentNode;
+  }
+};
+
+// скрытие объявления
+advertElement.classList.add('hidden');
+
+// событие mouseup
+mapPinMain.addEventListener('mouseup', activateMap);
+// клик на маркер
+mapPins.addEventListener('click', onPinClick);
+
+
