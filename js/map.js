@@ -206,9 +206,13 @@ var adverts = generateAdverts(ADVERT_COUNT);
 // ______________________________________________
 
 // функция, назначающая полям формы атрибут disabled
-var toggleForm = function () {
+var toggleForm = function (disabled) {
   for (var i = 0; i < form.querySelectorAll('fieldset').length; i++) {
-    form.querySelectorAll('fieldset')[i].setAttribute('disabled', true);
+    if (disabled) {
+      form.querySelectorAll('fieldset')[i].setAttribute('disabled', true);
+    } else {
+      form.querySelectorAll('fieldset')[i].removeAttribute('disabled');
+    }
   }
 };
 toggleForm(true);
@@ -217,8 +221,8 @@ toggleForm(true);
 var activateMap = function () {
   map.classList.remove('map--faded');
   renderPins(adverts);
+  toggleForm();
   form.classList.remove('notice__form--disabled');
-  toggleForm(false);
 };
 
 // взаимодействие с Esc
