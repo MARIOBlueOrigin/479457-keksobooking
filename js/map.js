@@ -280,4 +280,143 @@ mapPinMain.addEventListener('mouseup', activateMap);
 // клик на маркер
 mapPins.addEventListener('click', onPinClick);
 
+// ______________________________________________
+//
+// валидация формы
+// ______________________________________________
 
+var address = form.querySelector('#address');
+var title = form.querySelector('#title');
+var price = form.querySelector('#price');
+
+// Проверка правильности введенных данных
+address.setAttribute('required', 'required');
+address.setAttribute('readonly', 'readonly');
+
+title.setAttribute('required', 'required');
+title.setAttribute('minlength', '30');
+title.setAttribute('maxlength', '100');
+
+price.setAttribute('required', 'required');
+price.setAttribute('type', 'number');
+price.setAttribute('min', '0');
+price.setAttribute('max', '1000000');
+price.setAttribute('value', '1000');
+
+title.addEventListener('invalid', function () {
+  if (title.validity.tooShort) {
+    title.setCustomValidity('Заголовок объявления должен состоять минимум из 30 символов');
+  } else if (title.validity.tooLong) {
+    title.setCustomValidity('Заголовок объявления не должен привышать 100 символов');
+  } else if (title.validity.valueMissing) {
+    title.setCustomValidity('Обязательное поле');
+  } else {
+    title.setCustomValidity('');
+  }
+});
+
+title.addEventListener('input', function (evt) {
+  var target = evt.target;
+  if (target.value.length < 30) {
+    target.setCustomValidity('Заголовок объявления должен состоять минимум из 30 символов');
+  } else {
+    target.setCustomValidity('');
+  }
+});
+
+price.addEventListener('input', function () {
+  if (price.validity.rangeUnderflow) {
+    price.setCustomValidity('Цена меньше допустимого значения');
+  } else if (price.validity.rangeOverflow) {
+    price.setCustomValidity('Цена не должна превышать 1000000 рублей');
+  } else if (price.validity.valueMissing) {
+    price.setCustomValidity('Обязательное поле');
+  } else {
+    price.setCustomValidity('');
+  }
+});
+
+// Автоматическая корректировка полей в форме.
+
+var timein = form.querySelector('#timein');
+var timeout = form.querySelector('#timeout');
+
+//  «время заезда» и «время выезда»
+var synchronizeTime = function () {
+  timein.addEventListener('change', function () {
+    timeout.selectedIndex = timein.selectedIndex;
+  });
+
+  timeout.addEventListener('change', function () {
+    timein.selectedIndex = timeout.selectedIndex;
+  });
+};
+synchronizeTime();
+
+// «Тип жилья» и минимальная цена
+var minPrices = {
+  'bungalo': 0,
+  'flat': 1000,
+  'house': 5000,
+  'palace': 10000
+};
+
+var type = form.querySelector('#type');
+
+var synchronizeTypes = function () {
+  price.setAttribute('min', minPrices[type.option].value);
+};
+
+type.addEventListener('change', function () {
+  synchronizeTypes();
+});
+
+// Количество комнат связываем с количеством гостей:
+var rooms = document.querySelector('#room_number');
+var capacityInput = document.querySelector('#capacity');
+var synchronizeRooms = function (room, capacity) {
+  for (var i = 0; i < capacity.option.length; i++) {
+    capacity.option[i].disabled = true;
+  }
+  switch (room.value) {
+    case '1':
+      capacity.option[2].disabled = false;
+      break;
+    case '2':
+      capacity.option[1].disabled = false;
+      capacity.option[2].disabled = false;
+      break;
+    case '3':
+      capacity.option[0].disabled = false;
+      capacity.option[1].disabled = false;
+      capacity.option[2].disabled = false;
+      break;
+    case '100':
+      capacity.option[3].disabled = false;
+      break;
+  }
+};
+
+rooms.addEventListener('change', function () {
+  synchronizeRooms(rooms, capacityInput);
+});
+
+// отправка формы
+form.setAttribute('action', 'https://js.dump.academy/keksobooking');
+form.setAttribute('type', 'multipart/form-data');
+
+// красная рамка
+var inputs = form.querySelectorAll('input');
+var selects = form.querySelectorAll('select');
+
+var checkFields = function (formFields) {
+  for (var i = 0; i < formFields.length; i++) {
+    if (!formFields[i].validity.valid) {
+      formFields[i].setAttribute('style', 'border: 2px solid red');
+    } else {
+      formFields[i].removeAttribute('style');
+    }
+  }
+};
+checkFields(inputs);
+checkFields(selects);
