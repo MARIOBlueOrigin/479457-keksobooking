@@ -285,38 +285,42 @@ mapPins.addEventListener('click', onPinClick);
 // валидация формы
 // ______________________________________________
 
-var address = form.querySelector('#address');
-var title = form.querySelector('#title');
-var price = form.querySelector('#price');
+var addressElement = form.querySelector('#address');
+var titleElement = form.querySelector('#title');
+var priceElement = form.querySelector('#price');
 
 // Проверка правильности введенных данных
-address.setAttribute('required', 'required');
-address.setAttribute('readonly', 'readonly');
+addressElement.setAttribute('required', true);
+addressElement.setAttribute('readonly', true);
+addressElement.value = 'Some street in Tokyo';
 
-title.setAttribute('required', 'required');
-title.setAttribute('minlength', '30');
-title.setAttribute('maxlength', '100');
+titleElement.setAttribute('required', true);
+titleElement.setAttribute('minlength', '30');
+titleElement.setAttribute('maxlength', '100');
 
-price.setAttribute('required', 'required');
-price.setAttribute('type', 'number');
-price.setAttribute('min', '0');
-price.setAttribute('max', '1000000');
-price.setAttribute('value', '1000');
+priceElement.setAttribute('required', true);
+priceElement.setAttribute('type', 'number');
+priceElement.setAttribute('min', '0');
+priceElement.setAttribute('max', '1000000');
+priceElement.setAttribute('value', '1000');
 
-title.addEventListener('invalid', function () {
-  if (title.validity.tooShort) {
-    title.setCustomValidity('Заголовок объявления должен состоять минимум из 30 символов');
-  } else if (title.validity.tooLong) {
-    title.setCustomValidity('Заголовок объявления не должен привышать 100 символов');
-  } else if (title.validity.valueMissing) {
-    title.setCustomValidity('Обязательное поле');
+titleElement.addEventListener('invalid', function (evt) {
+  var target = evt.target;
+  target.style.border = '2px solid red';
+  if (target.validity.tooShort) {
+    target.setCustomValidity('Заголовок объявления должен состоять минимум из 30 символов');
+  } else if (target.validity.tooLong) {
+    target.setCustomValidity('Заголовок объявления не должен привышать 100 символов');
+  } else if (target.validity.valueMissing) {
+    target.setCustomValidity('Обязательное поле');
   } else {
-    title.setCustomValidity('');
+    target.setCustomValidity('');
   }
 });
 
-title.addEventListener('input', function (evt) {
+titleElement.addEventListener('input', function (evt) {
   var target = evt.target;
+  target.style.border = '';
   if (target.value.length < 30) {
     target.setCustomValidity('Заголовок объявления должен состоять минимум из 30 символов');
   } else {
@@ -324,15 +328,17 @@ title.addEventListener('input', function (evt) {
   }
 });
 
-price.addEventListener('input', function () {
-  if (price.validity.rangeUnderflow) {
-    price.setCustomValidity('Цена меньше допустимого значения');
-  } else if (price.validity.rangeOverflow) {
-    price.setCustomValidity('Цена не должна превышать 1000000 рублей');
-  } else if (price.validity.valueMissing) {
-    price.setCustomValidity('Обязательное поле');
+priceElement.addEventListener('invalid', function (evt) {
+  var target = evt.target;
+  target.style.border = '2px solid red';
+  if (target.validity.rangeUnderflow) {
+    target.setCustomValidity('Цена меньше допустимого значения');
+  } else if (target.validity.rangeOverflow) {
+    target.setCustomValidity('Цена не должна превышать 1000000 рублей');
+  } else if (target.validity.valueMissing) {
+    target.setCustomValidity('Обязательное поле');
   } else {
-    price.setCustomValidity('');
+    target.setCustomValidity('');
   }
 });
 
@@ -342,17 +348,13 @@ var timein = form.querySelector('#timein');
 var timeout = form.querySelector('#timeout');
 
 //  «время заезда» и «время выезда»
-var synchronizeTime = function () {
-  timein.addEventListener('change', function () {
-    timeout.selectedIndex = timein.selectedIndex;
-  });
+timein.addEventListener('change', function () {
+  timeout.selectedIndex = timein.selectedIndex;
+});
 
-  timeout.addEventListener('change', function () {
-    timein.selectedIndex = timeout.selectedIndex;
-  });
-};
-synchronizeTime();
-
+timeout.addEventListener('change', function () {
+  timein.selectedIndex = timeout.selectedIndex;
+});
 // «Тип жилья» и минимальная цена
 var minPrices = {
   'bungalo': 0,
@@ -364,7 +366,7 @@ var minPrices = {
 var type = form.querySelector('#type');
 
 var synchronizeTypes = function () {
-  price.setAttribute('min', minPrices[type.option].value);
+  priceElement.setAttribute('min', minPrices[type.value]);
 };
 
 type.addEventListener('change', function () {
@@ -375,24 +377,24 @@ type.addEventListener('change', function () {
 var rooms = document.querySelector('#room_number');
 var capacityInput = document.querySelector('#capacity');
 var synchronizeRooms = function (room, capacity) {
-  for (var i = 0; i < capacity.option.length; i++) {
-    capacity.option[i].disabled = true;
+  for (var i = 0; i < capacity.options.length; i++) {
+    capacity.options[i].disabled = true;
   }
   switch (room.value) {
     case '1':
-      capacity.option[2].disabled = false;
+      capacity.options[2].disabled = false;
       break;
     case '2':
-      capacity.option[1].disabled = false;
-      capacity.option[2].disabled = false;
+      capacity.options[1].disabled = false;
+      capacity.options[2].disabled = false;
       break;
     case '3':
-      capacity.option[0].disabled = false;
-      capacity.option[1].disabled = false;
-      capacity.option[2].disabled = false;
+      capacity.options[0].disabled = false;
+      capacity.options[1].disabled = false;
+      capacity.options[2].disabled = false;
       break;
     case '100':
-      capacity.option[3].disabled = false;
+      capacity.options[3].disabled = false;
       break;
   }
 };
@@ -405,18 +407,3 @@ rooms.addEventListener('change', function () {
 form.setAttribute('action', 'https://js.dump.academy/keksobooking');
 form.setAttribute('type', 'multipart/form-data');
 
-// красная рамка
-var inputs = form.querySelectorAll('input');
-var selects = form.querySelectorAll('select');
-
-var checkFields = function (formFields) {
-  for (var i = 0; i < formFields.length; i++) {
-    if (!formFields[i].validity.valid) {
-      formFields[i].setAttribute('style', 'border: 2px solid red');
-    } else {
-      formFields[i].removeAttribute('style');
-    }
-  }
-};
-checkFields(inputs);
-checkFields(selects);
