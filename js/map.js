@@ -330,13 +330,13 @@ form.addEventListener('input', function (evt) {
 
 addressElement.addEventListener('invalid', function (evt) {
   var target = evt.target;
-  target.style.border = setErrorBorder;
+  target.style.border = setErrorBorder(addressElement);
   return target.validity.valueMissing === true ? target.setCustomValidity('Обязательное поле') : target.setCustomValidity('');
 });
 
 titleElement.addEventListener('invalid', function (evt) {
   var target = evt.target;
-  target.style.border = setErrorBorder;
+  target.style.border = setErrorBorder(titleElement);
   if (target.validity.tooShort) {
     target.setCustomValidity('Заголовок объявления должен состоять минимум из 30 символов');
   } else if (target.validity.tooLong) {
@@ -350,7 +350,7 @@ titleElement.addEventListener('invalid', function (evt) {
 
 priceElement.addEventListener('invalid', function (evt) {
   var target = evt.target;
-  target.style.border = setErrorBorder;
+  target.style.border = setErrorBorder(priceElement);
   if (target.validity.rangeUnderflow) {
     target.setCustomValidity('Цена меньше допустимого значения');
   } else if (target.validity.rangeOverflow) {
