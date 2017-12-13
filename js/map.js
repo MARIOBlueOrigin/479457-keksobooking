@@ -288,6 +288,19 @@ mapPins.addEventListener('click', onPinClick);
 var addressElement = form.querySelector('#address');
 var titleElement = form.querySelector('#title');
 var priceElement = form.querySelector('#price');
+var timeinElement = form.querySelector('#timeinElement');
+var timeoutElement = form.querySelector('#timeoutElement');
+var typeElement = form.querySelector('#type');
+var roomElement = document.querySelector('#room_number');
+var capacityElement = document.querySelector('#capacity');
+
+var MIN_PRACES = {
+  'bungalo': 0,
+  'flat': 1000,
+  'house': 5000,
+  'palace': 10000
+};
+
 
 // Проверка правильности введенных данных
 addressElement.setAttribute('required', true);
@@ -304,9 +317,26 @@ priceElement.setAttribute('min', '0');
 priceElement.setAttribute('max', '1000000');
 priceElement.setAttribute('value', '1000');
 
+// добавление красной рамки
+var setErrorBorder = function (formElement) {
+  formElement.style.borderWidth = '2px';
+  formElement.style.borderColor = 'red';
+};
+// удаление рамки
+form.addEventListener('input', function (evt) {
+  var target = evt.target;
+  target.style.border = '';
+});
+
+addressElement.addEventListener('invalid', function (evt) {
+  var target = evt.target;
+  target.style.border = setErrorBorder;
+  return target.validity.valueMissing === true ? target.setCustomValidity('Обязательное поле') : target.setCustomValidity('');
+});
+
 titleElement.addEventListener('invalid', function (evt) {
   var target = evt.target;
-  target.style.border = '2px solid red';
+  target.style.border = setErrorBorder;
   if (target.validity.tooShort) {
     target.setCustomValidity('Заголовок объявления должен состоять минимум из 30 символов');
   } else if (target.validity.tooLong) {
@@ -318,19 +348,9 @@ titleElement.addEventListener('invalid', function (evt) {
   }
 });
 
-titleElement.addEventListener('input', function (evt) {
-  var target = evt.target;
-  target.style.border = '';
-  if (target.value.length < 30) {
-    target.setCustomValidity('Заголовок объявления должен состоять минимум из 30 символов');
-  } else {
-    target.setCustomValidity('');
-  }
-});
-
 priceElement.addEventListener('invalid', function (evt) {
   var target = evt.target;
-  target.style.border = '2px solid red';
+  target.style.border = setErrorBorder;
   if (target.validity.rangeUnderflow) {
     target.setCustomValidity('Цена меньше допустимого значения');
   } else if (target.validity.rangeOverflow) {
@@ -344,38 +364,25 @@ priceElement.addEventListener('invalid', function (evt) {
 
 // Автоматическая корректировка полей в форме.
 
-var timein = form.querySelector('#timein');
-var timeout = form.querySelector('#timeout');
-
 //  «время заезда» и «время выезда»
-timein.addEventListener('change', function () {
-  timeout.selectedIndex = timein.selectedIndex;
+timeinElement.addEventListener('change', function () {
+  timeoutElement.selectedIndex = timeinElement.selectedIndex;
 });
 
-timeout.addEventListener('change', function () {
-  timein.selectedIndex = timeout.selectedIndex;
+timeoutElement.addEventListener('change', function () {
+  timeinElement.selectedIndex = timeoutElement.selectedIndex;
 });
+
 // «Тип жилья» и минимальная цена
-var minPrices = {
-  'bungalo': 0,
-  'flat': 1000,
-  'house': 5000,
-  'palace': 10000
-};
-
-var type = form.querySelector('#type');
-
 var synchronizeTypes = function () {
-  priceElement.setAttribute('min', minPrices[type.value]);
+  priceElement.setAttribute('min', MIN_PRACES[typeElement.value]);
 };
 
-type.addEventListener('change', function () {
+typeElement.addEventListener('change', function () {
   synchronizeTypes();
 });
 
 // Количество комнат связываем с количеством гостей:
-var rooms = document.querySelector('#room_number');
-var capacityInput = document.querySelector('#capacity');
 var synchronizeRooms = function (room, capacity) {
   for (var i = 0; i < capacity.options.length; i++) {
     capacity.options[i].disabled = true;
@@ -399,11 +406,13 @@ var synchronizeRooms = function (room, capacity) {
   }
 };
 
-rooms.addEventListener('change', function () {
-  synchronizeRooms(rooms, capacityInput);
+roomElement.addEventListener('change', function () {
+  synchronizeRooms(roomElement, capacityElement);
 });
 
 // отправка формы
 form.setAttribute('action', 'https://js.dump.academy/keksobooking');
 form.setAttribute('type', 'multipart/form-data');
 
+// вызов функции
+synchronizeRooms(roomElement, capacityElement);
