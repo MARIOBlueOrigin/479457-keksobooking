@@ -4,17 +4,19 @@
 // главная часть страницы - карта
   var map = document.querySelector('.map');
 
+  var form = document.querySelector('.notice__form');
+
   // центральный пин
-  var mapPinMain = document.querySelector('map.map__pin--main');
+  var mapPinMain = map.querySelector('.map__pin--main');
 
   // функция, активирующая карту
-  window.activateMap = function () {
+  var activateMap = function () {
     map.classList.remove('map--faded');
     window.renderPins(window.adverts);
     window.toggleForm();
-    window.form.form.classList.remove('notice__form--disabled');
+    form.classList.remove('notice__form--disabled');
   };
 
   // событие mouseup
-  mapPinMain.addEventListener('mouseup', window.activateMap);
+  mapPinMain.addEventListener('mouseup', activateMap);
 })();

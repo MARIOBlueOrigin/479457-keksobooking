@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+window.form = (function () {
   //  форма
   var form = document.querySelector('.notice__form');
   var addressElement = form.querySelector('#address');
@@ -40,7 +40,7 @@
     formElement.style.borderColor = 'red';
   };
   // удаление рамки
-  window.form.addEventListener('input', function (evt) {
+  form.addEventListener('input', function (evt) {
     var target = evt.target;
     target.style.border = '';
   });
@@ -81,11 +81,11 @@
 
   // функция, назначающая полям формы атрибут disabled
   window.toggleForm = function (disabled) {
-    for (var i = 0; i < window.form.querySelectorAll('fieldset').length; i++) {
+    for (var i = 0; i < form.querySelectorAll('fieldset').length; i++) {
       if (disabled) {
-        window.form.querySelectorAll('fieldset')[i].setAttribute('disabled', true);
+        form.querySelectorAll('fieldset')[i].setAttribute('disabled', true);
       } else {
-        window.form.querySelectorAll('fieldset')[i].removeAttribute('disabled');
+        form.querySelectorAll('fieldset')[i].removeAttribute('disabled');
       }
     }
   };
@@ -140,8 +140,8 @@
   });
 
   // отправка формы
-  window.form.setAttribute('action', 'https://js.dump.academy/keksobooking');
-  window.form.setAttribute('type', 'multipart/form-data');
+  form.setAttribute('action', 'https://js.dump.academy/keksobooking');
+  form.setAttribute('type', 'multipart/form-data');
 
   // вызов функции
   synchronizeRooms(roomElement, capacityElement);

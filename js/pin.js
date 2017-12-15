@@ -4,6 +4,8 @@
   // пины
   var mapPins = document.querySelector('.map__pins');
 
+  window.previousPin = null;
+
   // функция собирает DOM-элементы, соответствующие меткам на карте
   var createMapPin = function (pin, i) {
     var mapPin = document.querySelector('template').content.querySelector('.map__pin').cloneNode(true);
@@ -22,6 +24,28 @@
     }
     mapPins.appendChild(fragment);
   };
+
+  // показ/ скрытие объявления
+  window.onPinClick = function (evt) {
+    var activePin = evt.target;
+
+    while (activePin !== mapPins) {
+      if (activePin.tagName === 'BUTTON') {
+        activePin.classList.add('map__pin--active');
+        if (previousPin) {
+          previousPin.classList.remove('map__pin--active');
+        }
+        previousPin = activePin;
+        if (!activePin.classList.contains('map__pin--main')) {
+          window.renderAdvert(window.adverts[activePin.dataset.index]);
+          window.openPopup();
+        }
+        return;
+      }
+      activePin = activePin.parentNode;
+    }
+  };
+
   // клик на маркер
   mapPins.addEventListener('click', window.onPinClick);
 })();

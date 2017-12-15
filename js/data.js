@@ -82,7 +82,7 @@
   };
 
   //  функция собирает объявления
-  window.generateAdverts = function (count) {
+  var generateAdverts = function (count) {
     var adverts = [];
     for (var i = 0; i < count; i++) {
       var x = (getRandomIndex(PIN_X_MIN, PIN_X_MAX) + PIN_X_SIZE);
@@ -114,5 +114,5 @@
   };
 
   // переменная сохраняет результат функции
-  window.adverts = window.generateAdverts(ADVERT_COUNT);
+  window.adverts = generateAdverts(ADVERT_COUNT);
 })();

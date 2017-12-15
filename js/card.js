@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  // главная часть страницы - карта
+  var map = document.querySelector('.map');
   // элементы шаблона
   var similarMapCardTemplate = document.querySelector('template').content;
   var mapCardTemplate = similarMapCardTemplate.querySelector('article.map__card');
@@ -8,8 +10,6 @@
 
   // закрытие объявления
   var popupClose = advertElement.querySelector('.popup__close');
-
-  var previousPin = null;
 
   var OFFER_TYPES = {
     flat: 'Квартира',
@@ -50,10 +50,10 @@
   };
 
   // функция создает фрагмент с сгенерированными DOM-элементами в блоке .map
-  var renderAdvert = function (advert) {
+  window.renderAdvert = function (advert) {
     var fragment = document.createDocumentFragment();
     fragment.appendChild(createAdvertElement(advert));
-    window.map.map.appendChild(fragment);
+    map.appendChild(fragment);
   };
 
   // взаимодействие с Esc
@@ -69,7 +69,7 @@
   };
 
   // функция, открывающая объявление
-  var openPopup = function () {
+  window.openPopup = function () {
     advertElement.classList.remove('hidden');
     popupClose.addEventListener('click', onCloseClick);
     document.addEventListener('keydown', onPopupEscPress);
@@ -78,31 +78,9 @@
   // функция, закрывающая объявление
   var closePopup = function () {
     advertElement.classList.add('hidden');
-    previousPin.classList.remove('map__pin--active');
+    window.previousPin.classList.remove('map__pin--active');
     document.removeEventListener('keydown', onPopupEscPress);
   };
-
-  // показ/ скрытие объявления
-  window.onPinClick = function (evt) {
-    var activePin = evt.target;
-
-    while (activePin !== window.pin.mapPins) {
-      if (activePin.tagName === 'BUTTON') {
-        activePin.classList.add('map__pin--active');
-        if (previousPin) {
-          previousPin.classList.remove('map__pin--active');
-        }
-        previousPin = activePin;
-        if (!activePin.classList.contains('map__pin--main')) {
-          renderAdvert(window.adverts[activePin.dataset.index]);
-          openPopup();
-        }
-        return;
-      }
-      activePin = activePin.parentNode;
-    }
-  };
-
 
   // скрытие объявления
   advertElement.classList.add('hidden');
