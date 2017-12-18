@@ -22,7 +22,6 @@ window.form = (function () {
   // Проверка правильности введенных данных
   addressElement.setAttribute('required', true);
   addressElement.setAttribute('readonly', true);
-  addressElement.value = 'Some street in Tokyo';
 
   titleElement.setAttribute('required', true);
   titleElement.setAttribute('minlength', '30');
