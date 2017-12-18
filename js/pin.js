@@ -32,10 +32,10 @@
     while (activePin !== mapPins) {
       if (activePin.tagName === 'BUTTON') {
         activePin.classList.add('map__pin--active');
-        if (previousPin) {
-          previousPin.classList.remove('map__pin--active');
+        if (window.previousPin) {
+          window.previousPin.classList.remove('map__pin--active');
         }
-        previousPin = activePin;
+        window.previousPin = activePin;
         if (!activePin.classList.contains('map__pin--main')) {
           window.renderAdvert(window.adverts[activePin.dataset.index]);
           window.openPopup();

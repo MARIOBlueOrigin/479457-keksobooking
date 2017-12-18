@@ -1,6 +1,6 @@
 'use strict';
 
-window.form = (function () {
+(function () {
   //  форма
   var form = document.querySelector('.notice__form');
   var addressElement = form.querySelector('#address');
@@ -144,5 +144,7 @@ window.form = (function () {
 
   // вызов функции
   synchronizeRooms(roomElement, capacityElement);
+
+  window.form = form;
 
 })();
