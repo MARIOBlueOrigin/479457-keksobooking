@@ -1,6 +1,6 @@
 'use strict';
 
-window.form = (function () {
+(function () {
   //  форма
   var form = document.querySelector('.notice__form');
   var addressElement = form.querySelector('#address');
@@ -22,7 +22,6 @@ window.form = (function () {
   // Проверка правильности введенных данных
   addressElement.setAttribute('required', true);
   addressElement.setAttribute('readonly', true);
-  addressElement.value = 'Some street in Tokyo';
 
   titleElement.setAttribute('required', true);
   titleElement.setAttribute('minlength', '30');
@@ -145,5 +144,7 @@ window.form = (function () {
 
   // вызов функции
   synchronizeRooms(roomElement, capacityElement);
+
+  window.form = form;
 
 })();
