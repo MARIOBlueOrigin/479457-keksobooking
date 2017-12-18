@@ -15,8 +15,9 @@
     max: 500
   };
 
-  // высота главного пина
+  // высота  и ширина главного пина
   var MAIN_PIN_HEIGHT = 58;
+  var MAIN_PIN_WIDTH = 26;
 
   // функция, активирующая карту
   var activateMap = function () {
@@ -53,7 +54,7 @@
       if ((mapPinMain.offsetTop - shift.y) >= (coordsY.min + MAIN_PIN_HEIGHT) && (mapPinMain.offsetTop - shift.y) <= (coordsY.max + MAIN_PIN_HEIGHT)) {
         mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
       }
-      window.form.addressElement.value = (mapPinMain.offsetTop - shift.y) + ', ' + (mapPinMain.offsetLeft - shift.x);
+      window.form.elements['address'].value = 'x: ' + ((mapPinMain.offsetLeft - shift.x) + MAIN_PIN_WIDTH / 2) + ', ' + 'y: ' + ((mapPinMain.offsetTop - shift.y) + MAIN_PIN_HEIGHT);
     };
 
     var onMouseUp = function (upEvt) {
