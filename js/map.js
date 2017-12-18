@@ -53,7 +53,7 @@
       if ((mapPinMain.offsetTop - shift.y) >= (coordsY.min + MAIN_PIN_HEIGHT) && (mapPinMain.offsetTop - shift.y) <= (coordsY.max + MAIN_PIN_HEIGHT)) {
         mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
       }
-      window.addressElement.value = (mapPinMain.offsetTop - shift.y) + ', ' + (mapPinMain.offsetLeft - shift.x);
+      window.form.addressElement.value = (mapPinMain.offsetTop - shift.y) + ', ' + (mapPinMain.offsetLeft - shift.x);
     };
 
     var onMouseUp = function (upEvt) {
