@@ -19,6 +19,19 @@
     'palace': 10000
   };
 
+  var CHECK_TIMES = [
+    '12:00',
+    '13:00',
+    '14:00'
+  ];
+
+  var OFFER_TYPES = [
+    'flat',
+    'bungalo',
+    'house',
+    'palace'
+  ];
+
   // Проверка правильности введенных данных
   addressElement.setAttribute('required', true);
   addressElement.setAttribute('readonly', true);
@@ -91,24 +104,30 @@
   window.toggleForm(true);
 
   // Автоматическая корректировка полей в форме.
-
-  //  «время заезда» и «время выезда»
-  timeinElement.addEventListener('change', function () {
-    timeoutElement.selectedIndex = timeinElement.selectedIndex;
-  });
-
-  timeoutElement.addEventListener('change', function () {
-    timeinElement.selectedIndex = timeoutElement.selectedIndex;
-  });
-
-  // «Тип жилья» и минимальная цена
-  var synchronizeTypes = function () {
-    priceElement.setAttribute('min', MIN_PRACES[typeElement.value]);
+  // Функции обратного вызова для синхронизации значений полей формы
+  var syncValues = function (element, value) {
+    element.value = value;
+  };
+  var syncValueWithMin = function (element, value) {
+    element.min = value;
   };
 
-  typeElement.addEventListener('change', function () {
-    synchronizeTypes();
-  });
+  //  «время заезда» и «время выезда»
+  var onTimeInSync = function () {
+    window.synchronizeFields(timeinElement, timeoutElement, CHECK_TIMES, CHECK_TIMES, syncValues);
+  };
+  var onTimeOutSync = function () {
+    window.synchronizeFields(timeoutElement, timeinElement, CHECK_TIMES, CHECK_TIMES, syncValues);
+  };
+  timeinElement.addEventListener('change', onTimeInSync);
+  timeoutElement.addEventListener('change', onTimeOutSync);
+
+  // «Тип жилья» и минимальная цена
+  var onTypeSync = function () {
+    window.synchronizeFields(typeElement, priceElement, OFFER_TYPES, MIN_PRACES, syncValueWithMin);
+  };
+
+  typeElement.addEventListener('change', onTypeSync);
 
   // Количество комнат связываем с количеством гостей:
   var synchronizeRooms = function (room, capacity) {
