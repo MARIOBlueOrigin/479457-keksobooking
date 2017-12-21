@@ -26,5 +26,5 @@
   };
 
   // клик на маркер
-  // window.mapPins.addEventListener('click', window.showCard);
+  window.mapPins.addEventListener('click', window.showCard);
 })();

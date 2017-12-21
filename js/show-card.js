@@ -20,7 +20,7 @@
       target = target.parentNode;
     }
   }
-  window.showCard = showCard();
+  window.showCard = showCard;
 
 })();
 
